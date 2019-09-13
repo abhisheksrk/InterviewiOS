@@ -15,6 +15,5 @@ public class CarManufacturerModel {
 
 	@Id
 	String id;
-	
 	String carManufacturerName;
 }
