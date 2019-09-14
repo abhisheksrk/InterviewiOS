@@ -43,4 +43,12 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler
         ErrorResponse error = new ErrorResponse("Validation Failed", details);
         return new ResponseEntity(error, HttpStatus.BAD_REQUEST);
     }
+    
+    @ExceptionHandler(ManufacturerNotExistException.class)
+    public final ResponseEntity<Object> ManufacturerNotExistException(ManufacturerNotExistException ex, WebRequest request) {
+        List<String> details = new ArrayList<>();
+        details.add(ex.getLocalizedMessage());
+        ErrorResponse error = new ErrorResponse("Record Not Exist", details);
+        return new ResponseEntity(error, HttpStatus.NOT_FOUND);
+    }
 }

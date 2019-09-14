@@ -4,8 +4,11 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.interview.example.exception.ManufacturerNotExistException;
 import com.interview.example.model.CarDetailsModel;
 import com.interview.example.model.CarManufacturerModel;
+import com.interview.example.model.RequestCarDetailsModel;
 import com.interview.example.repository.CarDetailsRepository;
 import com.interview.example.repository.CarManufacturerRepository;
 
@@ -65,16 +68,34 @@ public class CarDetailsServiceImpl implements CarDetailsService{
 	@Override
 	public Optional<CarManufacturerModel> CarManufacturerFindById(String id) 
 	{			
-		// TODO Auto-generated method stub
 		return carManufacturerRepo.findById(id);		
 	}
 
 	@Override
-	public List<CarDetailsModel> findCarDetailByBrandId(String brandId) {
-		// TODO Auto-generated method stub
-		//CarDetailsModel carModel=new CarDetailsModel();
+	public List<CarDetailsModel> findCarDetailByBrandId(RequestCarDetailsModel requestCarDetailsModel) {
+		String brandId=requestCarDetailsModel.getBrandId();
 		
-		return carDetailsRepo.findByBrandId(brandId);
+		Optional<CarManufacturerModel>  optional=    carManufacturerRepo.findById(brandId);
+		if(optional.isPresent()) {
+			return carDetailsRepo.findByBrandId(brandId);
+		}else {
+			throw new ManufacturerNotExistException("Brand does not exist");
+		}
+		
+		
+	}
+
+	@Override
+	public CarDetailsModel findByCarName(String carName) {
+		// TODO Auto-generated method stub
+		
+		return carDetailsRepo.findByCarName(carName);
+	}
+
+	@Override
+	public List<CarManufacturerModel> getAllManufacturer() {
+		// TODO Auto-generated method stub
+		return carManufacturerRepo.findAll();
 	}	
 	
 }

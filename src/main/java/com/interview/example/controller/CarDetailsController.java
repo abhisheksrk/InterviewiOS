@@ -20,7 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.interview.example.exception.RecordNotFoundException;
 import com.interview.example.model.CarDetailsModel;
 import com.interview.example.model.CarManufacturerModel;
+import com.interview.example.model.RequestCarDetailsModel;
 import com.interview.example.service.CarDetailsService;
+import com.mongodb.diagnostics.logging.Logger;
 
 @RestController
 public class CarDetailsController {
@@ -28,26 +30,42 @@ public class CarDetailsController {
 	@Autowired
 	CarDetailsService carDetailsService;
 	
+	public static String responseCode ;
+	
 	@PostMapping(value= "/createcardetail")
-	public ResponseEntity<CarDetailsModel> createcardetail(@Valid@RequestBody CarDetailsModel carDetailsModel)throws Exception {
-		
-		carDetailsService.createCarDetail(carDetailsModel);
-		//return "Car Added";
-		return new ResponseEntity<CarDetailsModel>(carDetailsModel, HttpStatus.OK);
+	public String createcardetail(@Valid@RequestBody CarDetailsModel carDetailsModel)throws Exception {
+		CarDetailsModel carModel ;
+		try {
+			carModel= carDetailsService.findByCarName(carDetailsModel.getCarName());
+			if(carModel==null)
+			{
+				responseCode = "Data Added Sucessfully";
+				carDetailsService.createCarDetail(carDetailsModel);
+			}
+			else {
+				responseCode = "Car name Already Exist !!";
+			}			
+		}catch(Exception ex) {	
+			System.out.println("Exception : "+ex);
+		}
+		return responseCode;
 	}
 	
 	@PutMapping(value="/updatecardetail/{car-id}")
 	public String updatecardetail(@PathVariable(value="car-id") String id,@RequestBody CarDetailsModel carDetailsModel)
 	{
+		responseCode="Car updated";
+		
 		carDetailsService.updateCarDetail(carDetailsModel);
-		return "Car Updated";
+		return responseCode;
 	}
 	
 	@DeleteMapping(value="/deletecardetail/{car-id}")
 	public String deletecardetail(@PathVariable(value= "car-id") String id) 
 	{
+		responseCode="Car Deleted";
 		carDetailsService.deleteCarDetailById(id);
-		return "Car Deleted";
+		return responseCode;
 	}
 	/*
 	@GetMapping(value="/getcarbyid/{car-id}")
@@ -66,24 +84,26 @@ public class CarDetailsController {
 	
 	@PostMapping(value= "/createcarmanufacturerdetail")
 	public String createcarmanufacturerdetail(@RequestBody CarManufacturerModel carManufacturerModel) {
-		
+		responseCode="Car Menufacturer Added";
 		carDetailsService.createCarManufacturerDetail(carManufacturerModel);
-		return "Car Menufacturer Added";
+		return responseCode;
 	}
 	
 	@PutMapping(value="/updatecarmanufacturerdetail/{car-id}")
 	public String updatecarmanufacturerdetail(@PathVariable(value="car-id") String id,@RequestBody CarManufacturerModel carManufacturerModel)
 	{
+		responseCode="Car Menufacturer Updated";
 		//carDetailsModel.set(id);
 		carDetailsService.updateCarManufacturerDetail(carManufacturerModel);
-		return "Car Menufacturer Updated";
+		return responseCode;
 	}
 	
 	@DeleteMapping(value="/deletecarmenufacturerdetail/{car-id}")
 	public String deletecarmenufacturerdetail(@PathVariable(value= "car-id") String id) 
 	{
+		responseCode="Car Manufacturer Deleted";
 		carDetailsService.deleteCarDetailById(id);
-		return "Car Manufacturer Deleted";
+		return responseCode;
 	}
 	
 	@GetMapping(value="/getcarmenufacturerbyid/{car-id}")
@@ -92,10 +112,16 @@ public class CarDetailsController {
 		return carDetailsService.CarManufacturerFindById(id);
 	}
 	
-	@GetMapping(value="/findbybrandid/{car-id}")
-	public List<CarDetailsModel> findByBrandId(@PathVariable(value="car-id")String brandId) 
+	@PostMapping(value="/findByBrandId")
+	public List<CarDetailsModel> findByBrandId(@RequestBody RequestCarDetailsModel requestCarDetailsModel) 
 	{
-			return carDetailsService.findCarDetailByBrandId(brandId);
+			return carDetailsService.findCarDetailByBrandId(requestCarDetailsModel);
+	}
+	
+	@GetMapping(value="/getAllManufacturer")
+	public List<CarManufacturerModel> getAllManufacturer()
+	{
+		return carDetailsService.getAllManufacturer();
 	}
 	
 }

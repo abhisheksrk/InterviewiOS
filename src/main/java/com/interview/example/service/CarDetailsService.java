@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.interview.example.model.CarDetailsModel;
 import com.interview.example.model.CarManufacturerModel;
+import com.interview.example.model.RequestCarDetailsModel;
 import com.interview.example.repository.CarDetailsRepository;
 
 
@@ -33,6 +34,12 @@ public interface CarDetailsService {
 	
 	public Optional<CarManufacturerModel> CarManufacturerFindById(String id);
 	
-	public List<CarDetailsModel> findCarDetailByBrandId(String brandId);
+	public List<CarDetailsModel> findCarDetailByBrandId(RequestCarDetailsModel requestCarDetailsModel);
+	
+	public  CarDetailsModel findByCarName(String carName);
+	
+	public List<CarManufacturerModel> getAllManufacturer();
+	
+	
 	
 }
